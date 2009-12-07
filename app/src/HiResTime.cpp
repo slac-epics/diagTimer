@@ -1,61 +1,59 @@
 
 #include <time.h>
 #include <sys/time.h>
-#include "HiResTime.h"
+#include <iostream>
+#include "epicsThread.h"
 
 #if	defined(linux) && defined(__x86_64__)
 #include "asm/cpufeature.h"
 #endif	//	linux
 
+#include "HiResTime.h"
+//	Force implementation of inlines for C callers
+#pragma implementation "HiResTime.h"
 
 using namespace     std;
 
-
-#if	defined(__x86_64__) && defined(cpu_has_tsc)
-double		hiResTicksPerSec	= 1.33333333e8;
-
-extern "C" t_HiResTime GetHiResTicks()
-{
-	long long tscVal;
-	asm volatile("rdtsc" : "=A" (tscVal));
-	return tscVal;
-}
-//	end of defined(__x86_64__) && defined(cpu_has_tsc)
-#elif	defined(__i386__)
-double		hiResTicksPerSec	= 1.33333333e8;
-
-extern "C" t_HiResTime GetHiResTicks()
-{
-	unsigned long	tscHi, tscLo;
-	asm volatile("rdtsc" : "=a" (tscLo), "=d" (tscHi) );
-	long long tscVal	=  static_cast<long long>( tscHi ) << 32;
-	tscVal				|= static_cast<long long>( tscLo );
-	return tscVal;
-}
-//	end of defined(__i386__)
-#elif	defined(mpc7455)
+//	Scale factor for ticks to seconds
+//	The initial value gets overridden by the
+//	CalibrateHiResTicksPerSec constructor during startup
 double		hiResTicksPerSec	= 1.33333333e8;
 
 
-extern "C" t_HiResTime GetHiResTicks()
+class	CalibrateHiResTicksPerSec
 {
-	unsigned up_old, up, low;
-	do
+public:
+	CalibrateHiResTicksPerSec( )
 	{
-		asm volatile("mftbu %0" : "=r" (up_old));
-		asm volatile("mftb  %0" : "=r" (low));
-		asm volatile("mftbu %0" : "=r" (up));
-	}	while (up_old != up);
+		const	double	calibDur	= 0.010;	//	Sleep for 10ms
+		t_HiResTime      tscStart    =	GetHiResTicks();
+		epicsThreadSleep( calibDur );
+		t_HiResTime      tscEnd		=	GetHiResTicks();
+		if ( tscEnd != tscStart )
+			hiResTicksPerSec	=	calibDur /	static_cast<double>(tscEnd - tscStart);
+		else
+		{
+			fprintf( stderr, "CalibrateHiResTicksPerSec: Failed to read valid HiResTick count!\n" );
+		}
+	}
+};
 
-	t_HiResTime hiResTicks = up;
-	hiResTicks <<= 32;
-	hiResTicks |= low;
-	return hiResTicks;
+
+CalibrateHiResTicksPerSec		theCalibrator;
+
+
+#ifdef	read_tsc
+
+#if 0	//	INLINE_GET_HI_RES_TICKS
+extern "C" t_HiResTime GetHiResTicks()
+{
+	t_HiResTime		tscVal;
+	read_tsc( tscVal );
+	return tscVal;
 }
-//	end of	defined(mpc7455)
-#else
-double		hiResTicksPerSec	= 1000000.0;
+#endif
 
+#else	//	read_tsc not defined
 
 extern "C" t_HiResTime GetHiResTicks()
 {
@@ -66,7 +64,8 @@ extern "C" t_HiResTime GetHiResTicks()
 	hiResTicks	+= static_cast<t_HiResTime>( curTimeVal.tv_usec );
 	return hiResTicks;
 }
-#endif	//	End of cpu specific hi res code
+
+#endif	//	read_tsc
 
 
 extern "C" double  HiResTicksToSeconds(
