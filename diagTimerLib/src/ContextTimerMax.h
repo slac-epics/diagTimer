@@ -23,15 +23,15 @@ class ContextTimerMax
 {
 public:
     /// Constructors.
-    ContextTimerMax(	const char *	pszDurName	)
-		:	m_pszDurName(		pszDurName			),
+    ContextTimerMax( const char *	pszContextName	)
+		:	m_ContextName(		pszContextName		),
 			m_MaxDur(			0					),
 			m_CumDur(			0					),
 			m_Count(			0					),
 			m_Enabled(			true				)
 	{
-		if( m_pszDurName == NULL || *m_pszDurName == '\0' )
-			m_pszDurName = "NoName";
+		if( pszContextName == NULL || *pszContextName == '\0' )
+			m_ContextName = "NoName";
 
 		ms_Instances.push_back( this );
 	}
@@ -103,6 +103,9 @@ public:
 	/// Show the current stats for all ContextTimerMax instances on stdout
 	static int	ShowAllContextTimers( );
 
+	/// Show the current stats for the specified ContextTimerMax instance on stdout
+	static int	ShowContextTimer( const std::string & contextName );
+
 private:
 	// Copying of this class is prohibited:
     ContextTimerMax(const ContextTimerMax&);
@@ -110,7 +113,7 @@ private:
 	// Assignment to this class is prohibited:
     ContextTimerMax& operator=(const ContextTimerMax&);
 
-	const char			*	m_pszDurName;
+	std::string				m_ContextName;
 	t_HiResTime				m_MaxDur;
 	t_HiResTime				m_CumDur;
 	unsigned int			m_Count;

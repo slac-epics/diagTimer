@@ -42,7 +42,7 @@ double	ContextTimerMax::GetDurAvg( ) const
 }
 
 
-void	ContextTimerMax::DisableAllContextTimer( )
+void	ContextTimerMax::DisableAllContextTimers( )
 {
 	for (	vector<ContextTimerMax *>::iterator it = ms_Instances.begin();
 			it != ms_Instances.end();
@@ -56,7 +56,7 @@ void	ContextTimerMax::DisableAllContextTimer( )
 }
 
 
-void	ContextTimerMax::EnableAllContextTimer( )
+void	ContextTimerMax::EnableAllContextTimers( )
 {
 	for (	vector<ContextTimerMax *>::iterator it = ms_Instances.begin();
 			it != ms_Instances.end();
@@ -70,7 +70,7 @@ void	ContextTimerMax::EnableAllContextTimer( )
 }
 
 
-void	ContextTimerMax::ResetAllContextTimer( )
+void	ContextTimerMax::ResetAllContextTimers( )
 {
 	for (	vector<ContextTimerMax *>::iterator it = ms_Instances.begin();
 			it != ms_Instances.end();
@@ -84,7 +84,7 @@ void	ContextTimerMax::ResetAllContextTimer( )
 }
 
 
-int	ContextTimerMax::ShowAllContextTimer( )
+int	ContextTimerMax::ShowAllContextTimers( )
 {
 	bool	fVerbose	= false;
 	for (	vector<ContextTimerMax *>::iterator it = ms_Instances.begin();
@@ -120,28 +120,28 @@ int	ContextTimerMax::ShowAllContextTimer( )
 }
 
 
-extern "C" int DisableAllContextTimer( )
+extern "C" int DisableAllContextTimers( )
 {
-	ContextTimerMax::DisableAllContextTimer( );
+	ContextTimerMax::DisableAllContextTimers( );
 	return 0;
 }
 
 
-extern "C" int EnableAllContextTimer( )
+extern "C" int EnableAllContextTimers( )
 {
-	ContextTimerMax::EnableAllContextTimer( );
+	ContextTimerMax::EnableAllContextTimers( );
 	return 0;
 }
 
 
-extern "C" int ResetAllContextTimer( )
+extern "C" int ResetAllContextTimers( )
 {
-	ContextTimerMax::ResetAllContextTimer( );
+	ContextTimerMax::ResetAllContextTimers( );
 	return 0;
 }
 
 
-extern "C" int ShowAllContextTimer( )
+extern "C" int ShowAllContextTimers( )
 {
-	return ContextTimerMax::ShowAllContextTimer( );
+	return ContextTimerMax::ShowAllContextTimers( );
 }

@@ -42,7 +42,7 @@ include $(EPICS_SITE_CONFIG)
 # If you would like the EPICS module to be build for 
 # EPICS_HOST_ARCH set this variable
 # =================================================================
-BUILD_FOR_HOST_ARCH=1
+#BUILD_FOR_HOST_ARCH=1
 
 # ===============================================================
 # Define the version of modules needed by
