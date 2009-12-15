@@ -72,9 +72,8 @@ extern "C" int testTimerOverhead( unsigned int nLoops )
 
 	t_HiResTime	cumDur		=	endHiRes - beginHiRes;
 	double		cumDurSec	=	HiResTicksToSeconds( cumDur );
-	cout	<<	"Cum Dur = " <<	cumDurSec	<<	"sec"	<< endl;
 	cout	<<	"Avg for "	 << nLoops
-			<<	" loops = "	 << cumDurSec / nLoops << "sec" << endl;
+			<<	" loops = "	 << (cumDurSec / nLoops) * 1.0e9 << " ns" << endl;
 	return 0;
 }
 

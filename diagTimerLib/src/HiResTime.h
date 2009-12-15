@@ -30,17 +30,17 @@ double  	HiResTicksToSeconds(	t_HiResTime	);
 do										      				\
 {	/*	=A is for 32 bit mode reading 64 bit integer */		\
 	unsigned long	tscHi, tscLo;      						\
-	asm volatile("rdtsc" : "=a" (tscLo), "=d" (tscHi) );    \
-	tscVal	=  static_cast<long long>( tscHi ) << 32;      	\
-	tscVal	|= static_cast<long long>( tscLo );      		\
+	__asm__ volatile("rdtsc" : "=a" (tscLo), "=d" (tscHi) );    \
+	tscVal	=  (t_HiResTime)( tscHi ) << 32;      			\
+	tscVal	|= (t_HiResTime)( tscLo );      				\
 }	while ( 0 );
 
-//	end of defined(__x86_64__)
+/*	end of defined(__x86_64__)	*/
 #elif	defined(__i386__)
 
-#define	read_tsc(tscVal)	asm volatile( "rdtsc": "=A" (tscVal) )
+#define	read_tsc(tscVal)	__asm__ volatile( "rdtsc": "=A" (tscVal) )
 
-//	end of defined(__i386__)
+/*	end of defined(__i386__)	*/
 #elif	defined(mpc7455)
 
 #define		read_tsc( tscVal	)	     					\
@@ -49,21 +49,18 @@ do										      				\
 	unsigned long	tscHi, tscHi_old, tscLo;				\
 	do														\
 	{														\
-		asm volatile("mftbu %0" : "=r" (tscHi_old));		\
-		asm volatile("mftb  %0" : "=r" (tscLo));			\
-		asm volatile("mftbu %0" : "=r" (tscHi));			\
+		__asm__ volatile("mftbu %0" : "=r" (tscHi_old));		\
+		__asm__ volatile("mftb  %0" : "=r" (tscLo));			\
+		__asm__ volatile("mftbu %0" : "=r" (tscHi));			\
 	}	while (tscHi_old != tscHi);							\
-	tscVal	=  static_cast<long long>( tscHi ) << 32;      	\
-	tscVal	|= static_cast<long long>( tscLo );      		\
+	tscVal	=  (t_HiResTime)( tscHi ) << 32;      			\
+	tscVal	|= (t_HiResTime)( tscLo );      				\
 }	while ( 0 );
 
-#endif	//	end of	defined(mpc7455)
-
-#ifdef	__cplusplus
-//	C++ functions
+#endif	/*	end of	defined(mpc7455)	*/
 
 #ifdef	read_tsc
-extern "C" inline t_HiResTime GetHiResTicks()
+extern __inline__ t_HiResTime GetHiResTicks()
 {
 	t_HiResTime		tscVal	= 0;
 	read_tsc( tscVal );
@@ -71,8 +68,11 @@ extern "C" inline t_HiResTime GetHiResTicks()
 }
 #endif	/*	read_tsc	*/
 
+#ifdef	__cplusplus
+//	C++ functions
+
 epicsTime	HiResToEpicsTime(		t_HiResTime );
 
 #endif	/*	__cplusplus	*/
 
-#endif      //  HI_RES_TIME_H
+#endif	/*  HI_RES_TIME_H	*/

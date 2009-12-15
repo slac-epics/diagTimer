@@ -68,9 +68,14 @@ private:
 	ContextTimerMax		&	m_rDurMax;
 };
 
+extern "C" {
 #endif	/*	__cplusplus	*/
 
-extern "C" int testTimerAccuracy( unsigned int numSeconds );
-extern "C" int testTimerOverhead( unsigned int numLoops );
+int testTimerAccuracy( unsigned int numSeconds );
+int testTimerOverhead( unsigned int numLoops );
 
-#endif // #ifndef CONTEXT_TIMER_H
+#ifdef	__cplusplus
+}
+#endif	/*	__cplusplus	*/
+
+#endif	/* #ifndef CONTEXT_TIMER_H	*/

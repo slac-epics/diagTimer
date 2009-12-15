@@ -20,7 +20,7 @@ testApp_DBD += diagTimer.dbd
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 testApp_SRCS += testApp_registerRecordDeviceDriver.cpp
-testApp_SRCS += diagTimerTest.cpp
+testApp_SRCS += diagTimerTest.c
 testApp_SRCS_DEFAULT += testAppMain.cpp
 testApp_SRCS_vxWorks += -nil-
 

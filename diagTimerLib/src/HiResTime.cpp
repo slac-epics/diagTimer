@@ -8,29 +8,20 @@
 #include <iocsh.h>
 #include <epicsExport.h>
 
-#if	defined(linux) && defined(__x86_64__)
-#include "asm/cpufeature.h"
-#endif	//	linux
-
 #include "HiResTime.h"
 //	Force implementation of inlines for C callers
 #pragma implementation "HiResTime.h"
 
 using namespace     std;
 
-//	Scale factor for ticks to seconds
-//	The initial value gets overridden by the
-//	CalibrateHiResTicksPerSec constructor during startup
-double			hiResTicksPerSec	= 1.33333333e8;
-
-unsigned int	DEBUG_HI_RES_TIME	= 0;
+unsigned int	DEBUG_HI_RES_TIME	= 1;
 
 class	CalibrateHiResTicksPerSec
 {
 public:
 	CalibrateHiResTicksPerSec( )
 	{
-		const double	calibDur	= 2.0;	//	duration in seconds
+		const double	calibDur	= 1000;	//	duration in ms
 		t_HiResTime     tscStart	= GetHiResTicks();
 		ms_initialTickCount			= tscStart;
 		ms_initialTimeOfDay			= epicsTime::getCurrent();
@@ -40,17 +31,17 @@ public:
 		double			actualDur	= endTime - ms_initialTimeOfDay;
 		if ( tscEnd != ms_initialTickCount )
 		{
-			hiResTicksPerSec	= static_cast<double>(tscEnd - tscStart) / actualDur;
+			ms_hiResTicksPerSec	= static_cast<double>(tscEnd - tscStart) / actualDur;
 			if ( DEBUG_HI_RES_TIME >= 1 )
 			{
 				cout << "CalibrateHiResTicksPerSec: " << (tscEnd - tscStart)
 					 << " ticks per " << actualDur	<< " sec"	<< endl;
-				cout << "CalibrateHiResTicksPerSec: ScaleFactor=" << hiResTicksPerSec
-					 << " = " << 1.0e9 / hiResTicksPerSec << " ns per tick" << endl;
-				cout << "CalibrateHiResTicksPerSec: InitialTick=" << ms_initialTickCount << endl;
+				cout << "CalibrateHiResTicksPerSec: ScaleFactor = " << ms_hiResTicksPerSec
+					 << " => " << 1.0e9 / ms_hiResTicksPerSec << " ns per tick" << endl;
+				cout << "CalibrateHiResTicksPerSec: InitialTick = " << ms_initialTickCount << endl;
 				char	buf[256];
 				ms_initialTimeOfDay.strftime( buf, 256, "%H:%M:%S.%09f" );
-				cout << "CalibrateHiResTicksPerSec: InitialTOD =" << string(buf) << endl;
+				cout << "CalibrateHiResTicksPerSec: InitialTOD  = " << string(buf) << endl;
 			}
 		}
 		else
@@ -61,7 +52,7 @@ public:
 
 	static double	HiResTicksToSeconds( t_HiResTime tickCount )
 	{
-		bool		fRecalcScaleFactor	= false;	// not working yet
+		bool	fRecalcScaleFactor	= false;	// not working yet
 
 		if ( fRecalcScaleFactor )
 		{
@@ -71,32 +62,56 @@ public:
 			double			scaleFactor	= static_cast<double>(curTicks - ms_initialTickCount) / totalDur;
 			cout << "HiResTicksToSeconds: curTicks    =" << curTicks	<< endl;
 			char	buf[256];
-			curTime.strftime( buf, 256, "%H:%M:%S.%09f" );
-			cout << "HiResTicksToSeconds: curTime     =" << string(buf)	<< endl;
-			cout << "HiResTicksToSeconds: totalDur    =" << totalDur	<< endl;
-			cout << "HiResTicksToSeconds: scaleFactor =" << scaleFactor	<< endl;
-			hiResTicksPerSec	= scaleFactor;
+			curTime.strftime(				buf, 256, "%H:%M:%S.%09f" );
+			cout << "HiResTicksToSeconds: curTime     = " << string(buf)	<< endl;
+			ms_initialTimeOfDay.strftime(	buf, 256, "%H:%M:%S.%09f" );
+			cout << "HiResTicksToSeconds: InitialTOD  = " << string(buf)	<< endl;
+
+			cout << "HiResTicksToSeconds: totalDur    = " << totalDur		<< endl;
+			cout << "HiResTicksToSeconds: scaleFactor = " << scaleFactor	<< endl;
+			ms_hiResTicksPerSec	= scaleFactor;
 		}
 		if ( DEBUG_HI_RES_TIME >= 2 )
 		{
 			cout << "HiResTicksToSeconds: tickCount   =" << tickCount	<< endl;
-			cout << "HiResTicksToSeconds: seconds	  =" << tickCount / hiResTicksPerSec	<< endl;
+			cout << "HiResTicksToSeconds: seconds	  =" << tickCount / ms_hiResTicksPerSec	<< endl;
 		}
-		return tickCount / hiResTicksPerSec;
+		return tickCount / ms_hiResTicksPerSec;
 	}
 
 private:
+	static double			ms_hiResTicksPerSec;
 	static t_HiResTime		ms_initialTickCount;
 	static epicsTime		ms_initialTimeOfDay;
 };
 
 
+//	Create a calibrator which will calibrate the HiRes tick resolution in its constructor
 CalibrateHiResTicksPerSec		theCalibrator;
+
+//	Keep the initial tick count for calibration purposes
 t_HiResTime		CalibrateHiResTicksPerSec::ms_initialTickCount	= 0LL;
+
+//	Keep the initial timeOfDay for calibration purposes
 epicsTime		CalibrateHiResTicksPerSec::ms_initialTimeOfDay;
 
+//	Scale factor for ticks to seconds
+//	The initial value gets overridden by the
+//	CalibrateHiResTicksPerSec constructor during startup
+double			CalibrateHiResTicksPerSec::ms_hiResTicksPerSec	= 1.33333333e8;
 
-#ifndef	read_tsc
+
+#ifdef	read_tsc
+#if 0
+extern "C" t_HiResTime GetHiResTicks()
+{
+	t_HiResTime		tscVal	= 0;
+	read_tsc( tscVal );
+	return tscVal;
+}
+#endif
+
+#else	/*	no read_tsc	*/
 
 extern "C" t_HiResTime GetHiResTicks()
 {
@@ -114,11 +129,7 @@ extern "C" t_HiResTime GetHiResTicks()
 extern "C" double  HiResTicksToSeconds(
 	t_HiResTime		nTicks	)
 {
-#if 0
-	return nTicks / hiResTicksPerSec;
-#else
 	return CalibrateHiResTicksPerSec::HiResTicksToSeconds( nTicks );
-#endif
 }
 
 

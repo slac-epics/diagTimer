@@ -1,6 +1,7 @@
-#!../../bin/linux-x86_64/testApp
+# RTEMS startup script
+cd( "../.." )
 
-#< envPaths
+ld( "bin/RTEMS-beatnik/testApp.obj" )
 
 ## Register all support components
 dbLoadDatabase("dbd/diagTimer.dbd",0,0)
@@ -20,5 +21,4 @@ testApp_registerRecordDeviceDriver(pdbbase)
 # To run the diag timer tests, type
 # runTest( 0 )    for timer accuracy test
 # runTest( 1 )    for timer overhead test
-# runTest( 2 )    for timer C test
 
