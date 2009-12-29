@@ -1,0 +1,52 @@
+#################################################################
+
+This module provides high resolution timing for
+diagnostic purposes.   On cpu's that support reading
+a cpu cycle counter, that counter is used.  If not,
+another counter can be provided with a little coding,
+and the default is to use gettimeofday().
+
+#################################################################
+
+C Header files: 	C compatible functions and typedef's:
+	HiResTime.h
+
+
+typedef		long long	t_HiResTimer;
+t_HiResTimer		GetHiResTicks();
+double				HiResTicksToSeconds( t_HiResTimer );
+
+Be aware that the 64 bit counter returned by GetHiResTicks()
+will roll over at some point.   Currently there is no support
+for this.  Also, on some cpu's, particularly mobile laptop cpu's,
+the cpu speed can vary when idle, resulting in incorrect scaling.
+
+As this module was created to help diagnose execution timing for
+short intervals, it may not be appropriate for long term timing support.
+
+#################################################################
+C++ Header files: 	C++ classes for easy context timing support
+	ContextTimer.h
+	ContextTimerMax.h
+
+C++ adds support for context timing via the macro:
+	CONTEXT_TIMER( "your context name" )
+This macro uses a C++ class, ContextTimer, to grab the hiRes tick count
+once where the macro is used and again when the context
+is exited via the class constructor and destructor.
+
+A companion class, ContextTimerMax, tracks all context timer instances
+and timing data and a set of "C" interface functions are provided to show
+and reset the context timers from iocsh or Cexp.
+
+extern "C" int ShowAllContextTimers()
+extern "C" int DisableAllContextTimers()
+extern "C" int EnableAllContextTimers()
+extern "C" int ResetAllContextTimers()
+
+#################################################################
+
+There are no EPICS pv's, db files, or template files provided.
+A dbd file, diagTimer.dbd, is provided to register the shell functions
+so they can be called from iocsh.
+

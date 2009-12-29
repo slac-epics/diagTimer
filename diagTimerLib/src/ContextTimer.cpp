@@ -28,6 +28,7 @@ using	namespace		std;
 
 extern "C" int testTimerAccuracy( unsigned int nSeconds )
 {
+	(void) HiResTicksToSeconds( 0LL );		//	Re-initializes CalibrateHiResTicksPerSec()
 	if ( nSeconds == 0 || nSeconds > 60 )
 	{
 		cerr << "testTimerAccuracy: Invalid test duration " << nSeconds << endl;

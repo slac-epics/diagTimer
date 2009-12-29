@@ -111,14 +111,14 @@ int	ContextTimerMax::ShowAllContextTimers( )
 
 		double	cumDurSec	= HiResTicksToSeconds( pContextTimerMax->m_CumDur );
 		double	maxDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MaxDur );
-		cout	<<	setiosflags(ios::left)	<<	setw(60)
-				<<	pContextTimerMax->m_ContextName
-				<<	setiosflags(ios::right)
-				<<	": CUM="	<<	setw(6)	<<	cumDurSec
-				<<	"sec, MAX="	<<	setw(5)	<<	maxDurSec
-				<<	"sec, AVG="	<<	setw(4)	<<	pContextTimerMax->GetDurAvg()
-				<<	"sec, Cnt="	<<	setw(6)	<<	pContextTimerMax->m_Count;
-		cout	<<	endl;
+		cout	//	<<	setiosflags(ios::scientific)
+				<<	setprecision(4)
+				<<	"CUM = "		<<	setw(6)	<<	cumDurSec
+				<<	" sec, MAX = "	<<	setw(6)	<<	maxDurSec * 1000
+				<<	" ms, AVG = "	<<	setw(6)	<<	pContextTimerMax->GetDurAvg() * 1000
+				<<	" ms, Cnt = "	<<	setw(8)<<	pContextTimerMax->m_Count
+				<<	", context = "	<<	pContextTimerMax->m_ContextName
+				<<	endl;
 	}
 	return 0;
 }
