@@ -58,11 +58,12 @@ public:
 				cout << "CalibrateHiResTicksPerSec: ScaleFactor = " << ms_hiResTicksPerSec
 					 << " => " << 1.0e9 / ms_hiResTicksPerSec << " ns per tick" << endl;
 				cout << "CalibrateHiResTicksPerSec: InitialTick = " << tscStart << endl;
-				char	buf[256];
-				startTime.strftime( buf, 256, "%H:%M:%S.%06f" );
-				cout << "CalibrateHiResTicksPerSec: startTime   = " << string(buf) << endl;
-				endTime.strftime( buf, 256, "%H:%M:%S.%06f" );
-				cout << "CalibrateHiResTicksPerSec: endTime     = " << string(buf) << endl;
+				char	buf1[256];
+				startTime.strftime( buf1, 256, "%H:%M:%S.%06f" );
+				cout << "CalibrateHiResTicksPerSec: startTime   = " << string(buf1) << endl;
+				char	buf2[256];
+				endTime.strftime( buf2, 256, "%H:%M:%S.%06f" );
+				cout << "CalibrateHiResTicksPerSec: endTime     = " << string(buf2) << endl;
 			}
 			ms_calibrated	= true;
 		}
