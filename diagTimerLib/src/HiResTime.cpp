@@ -6,7 +6,6 @@
 #include <epicsExport.h>
 #include <registryFunction.h>
 #include <iocsh.h>
-#include <epicsExport.h>
 
 #include "HiResTime.h"
 //	Force implementation of inlines for C callers
@@ -14,7 +13,7 @@
 
 using namespace     std;
 
-unsigned int	DEBUG_HI_RES_TIME	= 1;
+int	DEBUG_HI_RES_TIME	= 1;
 
 class	CalibrateHiResTicksPerSec
 {
@@ -33,9 +32,14 @@ public:
 			ms_initialTickCount		= GetHiResTicks();
 			ms_initialTimeOfDay		= timeStamp;
 			ms_initialized			= true;
-			char	buf[256];
-			ms_initialTimeOfDay.strftime( buf, 256, "%H:%M:%S.%06f" );
-			cout << "CalibrateHiResTicksPerSec: ms_initialTimeOfDay   = " << string(buf) << endl;
+			ms_calibrated			= false;
+			if ( DEBUG_HI_RES_TIME >= 2 )
+			{
+				char	buf[256];
+				ms_initialTimeOfDay.strftime( buf, 256, "%H:%M:%S.%06f" );
+				cout << "CalibrateHiResTicksPerSec: ms_initialTimeOfDay   = " << string(buf) << endl;
+				cout << "CalibrateHiResTicksPerSec: ms_initialTickCount   = " << ms_initialTickCount << endl;
+			}
 		}
 	}
 
@@ -57,6 +61,9 @@ public:
 					 << " ticks per " << actualDur	<< " sec"	<< endl;
 				cout << "CalibrateHiResTicksPerSec: ScaleFactor = " << ms_hiResTicksPerSec
 					 << " => " << 1.0e9 / ms_hiResTicksPerSec << " ns per tick" << endl;
+			}
+			if ( DEBUG_HI_RES_TIME >= 2 )
+			{
 				cout << "CalibrateHiResTicksPerSec: InitialTick = " << tscStart << endl;
 				char	buf1[256];
 				startTime.strftime( buf1, 256, "%H:%M:%S.%06f" );
@@ -77,32 +84,36 @@ public:
 	{
 		if ( !ms_initialized || ms_initialTimeOfDay == ms_undefEpicsTime )
 			Initialize();
-		bool	fRecalcScaleFactor	= true;	// not working yet
+
+		// tested recalc but didn't improve over initial calibration
+		bool	fRecalcScaleFactor	= false;
 		if ( ms_initialized && !ms_calibrated )
 			Calibrate();
-		else if ( ms_initialized && ms_calibrated )
+		else if ( ms_initialized && ms_calibrated && fRecalcScaleFactor )
 		{
 			t_HiResTime		curTicks	= GetHiResTicks();
 			epicsTime		curTime		= epicsTime::getCurrent();
 			double			totalDur	= curTime - ms_initialTimeOfDay;
 			double			scaleFactor	= static_cast<double>(curTicks - ms_initialTickCount) / totalDur;
-			cout << "HiResTicksToSeconds: curTicks    =" << curTicks	<< endl;
-			char	buf[256];
-			curTime.strftime(				buf, 256, "%H:%M:%S.%06f" );
-			cout << "HiResTicksToSeconds: curTime     = " << string(buf)	<< endl;
-			ms_initialTimeOfDay.strftime(	buf, 256, "%H:%M:%S.%06f" );
-			cout << "HiResTicksToSeconds: InitialTOD  = " << string(buf)	<< endl;
+			if ( DEBUG_HI_RES_TIME >= 2 )
+			{
+				cout << "HiResTicksToSeconds: curTicks    = " << curTicks	<< endl;
+				char	buf[256];
+				curTime.strftime(				buf, 256, "%H:%M:%S.%06f" );
+				cout << "HiResTicksToSeconds: curTime     = " << string(buf)	<< endl;
+				ms_initialTimeOfDay.strftime(	buf, 256, "%H:%M:%S.%06f" );
+				cout << "HiResTicksToSeconds: InitialTOD  = " << string(buf)	<< endl;
 
-			cout << "HiResTicksToSeconds: totalDur    = " << totalDur		<< endl;
-			cout << "HiResTicksToSeconds: old scaleFactor = " << ms_hiResTicksPerSec	<< endl;
-			cout << "HiResTicksToSeconds: new scaleFactor = " << scaleFactor	<< endl;
-			if ( fRecalcScaleFactor )
-				ms_hiResTicksPerSec	= scaleFactor;
+				cout << "HiResTicksToSeconds: totalDur    = " << totalDur		<< endl;
+				cout << "HiResTicksToSeconds: old scaleFactor = " << ms_hiResTicksPerSec	<< endl;
+				cout << "HiResTicksToSeconds: new scaleFactor = " << scaleFactor	<< endl;
+			}
+			ms_hiResTicksPerSec	= scaleFactor;
 		}
 		if ( DEBUG_HI_RES_TIME >= 2 )
 		{
-			cout << "HiResTicksToSeconds: tickCount   =" << tickCount	<< endl;
-			cout << "HiResTicksToSeconds: seconds	  =" << tickCount / ms_hiResTicksPerSec	<< endl;
+			cout << "HiResTicksToSeconds: tickCount   = " << tickCount	<< endl;
+			cout << "HiResTicksToSeconds: seconds     = " << tickCount / ms_hiResTicksPerSec	<< endl;
 		}
 		return tickCount / ms_hiResTicksPerSec;
 	}
@@ -187,8 +198,6 @@ void GetHiResTicksRegister(void)
 	iocshRegister( &GetHiResTicksFuncDef, reinterpret_cast<iocshCallFunc>(GetHiResTicksCallFunc) );
 }
 
-epicsExportRegistrar( GetHiResTicksRegister );
-
 
 /* Register HiResTicksToSeconds */
 static const iocshArg		HiResTicksToSecondsArg0		= { "numTicks", iocshArgInt };
@@ -203,5 +212,9 @@ void HiResTicksToSecondsRegister(void)
 	iocshRegister( &HiResTicksToSecondsFuncDef, reinterpret_cast<iocshCallFunc>(HiResTicksToSecondsCallFunc) );
 }
 
-epicsExportRegistrar( HiResTicksToSecondsRegister );
-
+extern "C"
+{
+	epicsExportRegistrar( GetHiResTicksRegister );
+	epicsExportRegistrar( HiResTicksToSecondsRegister );
+	epicsExportAddress( int, DEBUG_HI_RES_TIME );
+}
