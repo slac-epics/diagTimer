@@ -21,7 +21,8 @@ public:
 	CalibrateHiResTicksPerSec( )
 	{
 		Initialize();
-		Calibrate();
+		//	Don't Calibrate now as EPICS clock may not be ready
+		//	Calibrate();
 	}
 
 	static void Initialize( )
