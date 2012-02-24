@@ -1,6 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <iocsh.h>
+#include <vector>
+#include <algorithm>
 #include <epicsExport.h>
 #include <registryFunction.h>
 #include "ContextTimerMax.h"

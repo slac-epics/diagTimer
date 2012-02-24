@@ -6,11 +6,11 @@
 #include "epicsExport.h"
 #include "registryFunction.h"
 #include "iocsh.h"
-#include "iocClock.h"
+#include "epicsTime.h"
 
-#include "HiResTime.h"
 //	Force implementation of inlines for C callers
 #pragma implementation "HiResTime.h"
+#include "HiResTime.h"
 
 using namespace     std;
 
@@ -29,7 +29,7 @@ public:
 	static void Initialize( )
 	{
 		epicsTimeStamp		timeStamp;
-		if ( systemTimeGetCurrent( &timeStamp ) != epicsTimeERROR )
+		if ( epicsTimeGetCurrent( &timeStamp ) != epicsTimeERROR )
 		{
 			ms_initialTickCount		= GetHiResTicks();
 			ms_initialTimeOfDay		= timeStamp;
