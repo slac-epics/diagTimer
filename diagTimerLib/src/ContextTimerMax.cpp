@@ -24,6 +24,11 @@ ContextTimerMax::NewDur( const t_HiResTime	&	aNewDur	)
 		// New Maximum duration
 		m_MaxDur	= aNewDur;
 	}
+	if ( m_StartTime == 0 )
+	{
+		// Start the clock for rate calculations
+		m_StartTime	= GetCurTime( );
+	}
 }
 
 
@@ -43,6 +48,15 @@ double	ContextTimerMax::GetDurAvg( ) const
 {
 	double	cumDurSec	= HiResTicksToSeconds( m_CumDur );
 	return	cumDurSec / m_Count;
+}
+
+
+double	ContextTimerMax::GetRate( ) const
+{
+	t_HiResTime	dur( GetCurTime( ) );
+	dur	-= m_StartTime;
+	double	durSec	= HiResTicksToSeconds( dur );
+	return	durSec ? m_Count / durSec : 0.0;
 }
 
 
@@ -115,11 +129,12 @@ int	ContextTimerMax::ShowAllContextTimers( )
 		double	maxDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MaxDur );
 		cout	//	<<	setiosflags(ios::scientific)
 				<<	setprecision(4)
-				<<	"CUM = "		<<	setw(6)	<<	cumDurSec
-				<<	" sec, MAX = "	<<	setw(6)	<<	maxDurSec * 1000
-				<<	" ms, AVG = "	<<	setw(6)	<<	pContextTimerMax->GetDurAvg() * 1000
-				<<	" ms, Cnt = "	<<	setw(8)<<	pContextTimerMax->m_Count
-				<<	", context = "	<<	pContextTimerMax->m_ContextName
+				<<	"CUM = "		<<	setw(5)	<<	cumDurSec
+				<<	"sec, MAX = "	<<	setw(6)	<<	maxDurSec * 1000
+				<<	"ms, AVG = "	<<	setw(6)	<<	pContextTimerMax->GetDurAvg() * 1000
+				<<	"ms, Cnt = "	<<	setw(7)	<<	pContextTimerMax->m_Count
+				<<	", Rate = "		<<	setw(6)	<<	pContextTimerMax->GetRate()
+				<<	"Hz, context = "			<<	pContextTimerMax->m_ContextName
 				<<	endl;
 	}
 	return 0;
@@ -156,11 +171,12 @@ int	ContextTimerMax::ShowContextTimer( const string & contextName )
 		cout	<<	setiosflags(ios::left)	<<	setw(60)
 				<<	pContextTimerMax->m_ContextName
 				<<	setiosflags(ios::right)
-				<<	": CUM="	<<	setw(6)	<<	cumDurSec
-				<<	"sec, MAX="	<<	setw(5)	<<	maxDurSec
-				<<	"sec, AVG="	<<	setw(4)	<<	pContextTimerMax->GetDurAvg()
-				<<	"sec, Cnt="	<<	setw(6)	<<	pContextTimerMax->m_Count;
-		cout	<<	endl;
+				<<	": CUM="	<<	setw(5)	<<	cumDurSec
+				<<	"sec, MAX="	<<	setw(6)	<<	maxDurSec * 1000
+				<<	"ms, AVG="	<<	setw(6)	<<	pContextTimerMax->GetDurAvg() * 1000
+				<<	"ms, Cnt="	<<	setw(7)	<<	pContextTimerMax->m_Count
+				<<	", Rate = "	<<	setw(6)	<<	pContextTimerMax->GetRate()
+				<<	"Hz"		<<	endl;
 	}
 	return 0;
 }

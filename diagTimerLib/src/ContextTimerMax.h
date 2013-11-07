@@ -27,6 +27,7 @@ public:
 		:	m_ContextName(		pszContextName		),
 			m_MaxDur(			0					),
 			m_CumDur(			0					),
+			m_StartTime(		0					),
 			m_Count(			0					),
 			m_Enabled(			true				)
 	{
@@ -45,6 +46,8 @@ public:
 		m_MaxDur	= 0;
 		m_CumDur	= 0;
 		m_Count		= 0;
+		// Restart the clock for rate calculations
+		m_StartTime	= GetCurTime( );
 	}
 
  	/// Disable the tracking
@@ -62,6 +65,9 @@ public:
  	/// Get the average duration
 	double	GetDurAvg( ) const;
 
+ 	/// Get the average rate since last reset in counts/sec
+	double	GetRate( ) const;
+
  	/// Get the current cumulative duration
 	t_HiResTime	GetDurCum( ) const
 	{
@@ -78,6 +84,12 @@ public:
 	unsigned int	GetCount( ) const
 	{
 		return m_Count;
+	}
+
+	/// Get the current HiRes Tick count
+	static t_HiResTime 	GetCurTime( )
+	{
+		return	GetHiResTicks();
 	}
 
  	/// Return true if enabled for tracking
@@ -116,6 +128,7 @@ private:
 	std::string				m_ContextName;
 	t_HiResTime				m_MaxDur;
 	t_HiResTime				m_CumDur;
+	t_HiResTime				m_StartTime;
 	unsigned int			m_Count;
 	bool					m_Enabled;
 
