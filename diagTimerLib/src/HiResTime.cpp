@@ -14,7 +14,8 @@
 
 using namespace     std;
 
-int	DEBUG_HI_RES_TIME	= 1;
+int	DEBUG_HI_RES_TIME		= 1;
+
 
 class	CalibrateHiResTicksPerSec
 {
@@ -120,6 +121,11 @@ public:
 		return tickCount / ms_hiResTicksPerSec;
 	}
 
+	static double HiResTicksPerSecond( )
+	{
+		return ms_hiResTicksPerSec;
+	}
+
 private:
 	static double			ms_hiResTicksPerSec;
 	static t_HiResTime		ms_initialTickCount;
@@ -186,6 +192,12 @@ epicsTime HiResToEpicsTime( t_HiResTime valHiRes )
 	epicsTime		valEpicsTime(	valTimeSpec );
 
 	return	valEpicsTime;
+}
+
+// For accessing calibrated ticks per second from C code
+extern "C" double  	HiResTicksPerSecond( )
+{
+	return CalibrateHiResTicksPerSec::HiResTicksPerSecond();
 }
 
 

@@ -12,6 +12,7 @@ typedef		long long		t_HiResTime;
 t_HiResTime	GetHiResTicks();
 
 double  	HiResTicksToSeconds(	t_HiResTime	);
+double  	HiResTicksPerSecond( );
 
 #ifdef	__cplusplus
 }
@@ -41,7 +42,7 @@ do										      				\
 #define	read_tsc(tscVal)	__asm__ volatile( "rdtsc": "=A" (tscVal) )
 
 /*	end of defined(__i386__)	*/
-#elif	defined(mpc7455)
+#elif	defined(mpc7455) || defined(__PPC__)
 
 #define		read_tsc( tscVal	)	     					\
 do										      				\
@@ -49,9 +50,9 @@ do										      				\
 	unsigned long	tscHi, tscHi_old, tscLo;				\
 	do														\
 	{														\
-		__asm__ volatile("mftbu %0" : "=r" (tscHi_old));		\
-		__asm__ volatile("mftb  %0" : "=r" (tscLo));			\
-		__asm__ volatile("mftbu %0" : "=r" (tscHi));			\
+		__asm__ volatile("mftbu %0" : "=r" (tscHi_old));	\
+		__asm__ volatile("mftb  %0" : "=r" (tscLo));		\
+		__asm__ volatile("mftbu %0" : "=r" (tscHi));		\
 	}	while (tscHi_old != tscHi);							\
 	tscVal	=  (t_HiResTime)( tscHi ) << 32;      			\
 	tscVal	|= (t_HiResTime)( tscLo );      				\
