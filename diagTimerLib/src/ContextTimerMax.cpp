@@ -24,10 +24,10 @@ ContextTimerMax::NewDur( const t_HiResTime	&	aNewDur	)
 		// New Maximum duration
 		m_MaxDur	= aNewDur;
 	}
-	if ( m_StartTime == 0 )
+	if ( m_RateStartTime == 0 )
 	{
 		// Start the clock for rate calculations
-		m_StartTime	= GetCurTime( );
+		m_RateStartTime	= GetCurTime( );
 	}
 }
 
@@ -54,7 +54,7 @@ double	ContextTimerMax::GetDurAvg( ) const
 double	ContextTimerMax::GetRate( ) const
 {
 	t_HiResTime	dur( GetCurTime( ) );
-	dur	-= m_StartTime;
+	dur	-= m_RateStartTime;
 	double	durSec	= HiResTicksToSeconds( dur );
 	return	durSec ? m_Count / durSec : 0.0;
 }
@@ -127,13 +127,16 @@ int	ContextTimerMax::ShowAllContextTimers( )
 
 		double	cumDurSec	= HiResTicksToSeconds( pContextTimerMax->m_CumDur );
 		double	maxDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MaxDur );
-		cout	//	<<	setiosflags(ios::scientific)
-				<<	setprecision(4)
-				<<	"CUM = "		<<	setw(5)	<<	cumDurSec
-				<<	"sec, MAX = "	<<	setw(6)	<<	maxDurSec * 1000
-				<<	"ms, AVG = "	<<	setw(6)	<<	pContextTimerMax->GetDurAvg() * 1000
+		cout	<<	setprecision(3)
+			//	<<	setiosflags(ios::scientific)
+				<<	setiosflags(ios::fixed)
+				<<	"CUM = "		<<	setw(7)	<<	cumDurSec
+				<<	"sec, MAX = "	<<	setw(9)	<<	maxDurSec * 1000
+				<<	setprecision(5)
+				<<	"ms, AVG = "	<<	setw(9)	<<	pContextTimerMax->GetDurAvg() * 1000
 				<<	"ms, Cnt = "	<<	setw(7)	<<	pContextTimerMax->m_Count
-				<<	", Rate = "		<<	setw(6)	<<	pContextTimerMax->GetRate()
+				<<	setprecision(2)
+				<<	", Rate = "		<<	setw(7)	<<	pContextTimerMax->GetRate()
 				<<	"Hz, context = "			<<	pContextTimerMax->m_ContextName
 				<<	endl;
 	}

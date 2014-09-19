@@ -18,6 +18,14 @@
 ///			ContextTimer			contextTimer( contextTimerMax );
 ///			...
 ///		}
+///
+/// or as a general purpose interval timer
+///		{
+///			static	ContextTimerMax	timer1( name );
+///			timer1.StartTimer( );
+///				... run some code ...
+///			timer1.StopTimer( );
+///		}
 ///	
 class ContextTimerMax
 {
@@ -25,15 +33,17 @@ public:
     /// Constructors.
     ContextTimerMax( const char *	pszContextName	)
 		:	m_ContextName(		pszContextName		),
-			m_MaxDur(			0					),
-			m_CumDur(			0					),
-			m_StartTime(		0					),
+			m_MaxDur(			0LL					),
+			m_CumDur(			0LL					),
+			m_RateStartTime(	0LL					),
+			m_StartTime(		-1LL				),
 			m_Count(			0					),
 			m_Enabled(			true				)
 	{
 		if( pszContextName == NULL || *pszContextName == '\0' )
 			m_ContextName = "NoName";
 
+		printf( "Registering ContextTimerMax %s, %zu total\n", m_ContextName.c_str(), ms_Instances.size() );
 		ms_Instances.push_back( this );
 	}
 
@@ -43,11 +53,11 @@ public:
 	/// Reset the tracked counts and durations
 	void		Reset( )
 	{
-		m_MaxDur	= 0;
-		m_CumDur	= 0;
+		m_MaxDur	= 0LL;
+		m_CumDur	= 0LL;
 		m_Count		= 0;
 		// Restart the clock for rate calculations
-		m_StartTime	= GetCurTime( );
+		m_RateStartTime	= GetCurTime( );
 	}
 
  	/// Disable the tracking
@@ -101,6 +111,26 @@ public:
  	/// Update with a new duration
 	void	NewDur( const t_HiResTime	& newDur );
 
+	void	CancelTimer( )
+	{
+		m_StartTime	= -1LL;
+	}
+
+	void	StartTimer( )
+	{
+		m_StartTime	= GetCurTime( );
+	}
+
+	void	StopTimer( )
+	{
+		if ( m_StartTime >= 0 )
+		{
+			t_HiResTime	dur( GetCurTime( ) );
+			dur	-= m_StartTime;
+			NewDur( dur );
+		}
+	}
+
 	// Public class functions
 
     /// Disable all the ContextTimerMax instances
@@ -128,6 +158,7 @@ private:
 	std::string				m_ContextName;
 	t_HiResTime				m_MaxDur;
 	t_HiResTime				m_CumDur;
+	t_HiResTime				m_RateStartTime;
 	t_HiResTime				m_StartTime;
 	unsigned int			m_Count;
 	bool					m_Enabled;

@@ -178,13 +178,14 @@ extern "C" t_HiResTime GetHiResTicks()
 extern "C" double  HiResTicksToSeconds(
 	t_HiResTime		nTicks	)
 {
-	return CalibrateHiResTicksPerSec::HiResTicksToSeconds( nTicks );
+	double	seconds = CalibrateHiResTicksPerSec::HiResTicksToSeconds( nTicks );
+	return seconds;
 }
 
 
 epicsTime HiResToEpicsTime( t_HiResTime valHiRes )
 {
-	double			dblHiRes	= HiResTicksToSeconds( valHiRes );
+	double			dblHiRes = CalibrateHiResTicksPerSec::HiResTicksToSeconds( valHiRes );
 	struct timespec	valTimeSpec;
 	valTimeSpec.tv_sec	=	static_cast<time_t>(	dblHiRes );
 	dblHiRes			-=	static_cast<double>(	valTimeSpec.tv_sec );
@@ -205,7 +206,11 @@ extern "C" double  	HiResTicksPerSecond( )
 static const iocshFuncDef   GetHiResTicksFuncDef	= { "GetHiResTicks", 0, NULL };
 static int  GetHiResTicksCallFunc( const iocshArgBuf * args )
 {
-	return static_cast<int>( GetHiResTicks( ) );
+	t_HiResTime			hiResTicks	= GetHiResTicks( );
+#ifdef linux
+	printf( "%lld\n", hiResTicks );
+#endif
+	return static_cast<int>( hiResTicks );
 }
 void GetHiResTicksRegister(void)
 {
@@ -219,7 +224,11 @@ static const iocshArg	*	HiResTicksToSecondsArgs[1]	= { &HiResTicksToSecondsArg0 
 static const iocshFuncDef   HiResTicksToSecondsFuncDef	= { "HiResTicksToSeconds", 1, HiResTicksToSecondsArgs };
 static double  HiResTicksToSecondsCallFunc( const iocshArgBuf * args )
 {
-	return HiResTicksToSeconds( static_cast<t_HiResTime>( args[0].ival ) );
+	double seconds = HiResTicksToSeconds( static_cast<t_HiResTime>( args[0].ival ) );
+#ifdef linux
+	printf( "%.7e\n", seconds );
+#endif
+	return seconds;
 }
 void HiResTicksToSecondsRegister(void)
 {
