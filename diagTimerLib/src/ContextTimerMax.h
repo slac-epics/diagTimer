@@ -43,7 +43,7 @@ public:
 		if( pszContextName == NULL || *pszContextName == '\0' )
 			m_ContextName = "NoName";
 
-		printf( "Registering ContextTimerMax %s, %zu total\n", m_ContextName.c_str(), ms_Instances.size() );
+//		printf( "Registering ContextTimerMax %s, %zu total\n", m_ContextName.c_str(), ms_Instances.size() );
 		ms_Instances.push_back( this );
 	}
 
