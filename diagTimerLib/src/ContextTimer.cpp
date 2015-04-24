@@ -12,6 +12,7 @@
  
 #include <iostream>
 #include <iocsh.h>
+#include <unistd.h>
 #include <epicsExport.h>
 #include "HiResTime.h"
 #include "ContextTimer.h"
