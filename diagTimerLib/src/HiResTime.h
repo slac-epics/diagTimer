@@ -23,7 +23,7 @@ double  	HiResTicksPerSecond( );
  * Macro definitions for reading the timestamp counter
  * Add processor specific variants of the read_tsc() macro as needed and available
  * If read_tsc() is not defined here, a version of GetHiResTicks() is provided
- * as a function that provides a backup using gettimeofday()
+ * as a function that provides a backup using clock_gettime()
  */
 #if	defined(__x86_64__)
 

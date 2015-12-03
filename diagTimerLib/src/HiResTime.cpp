@@ -164,11 +164,15 @@ bool			CalibrateHiResTicksPerSec::ms_calibrated		= false;
 
 extern "C" t_HiResTime GetHiResTicks()
 {
-	struct timeval		curTimeVal;
-	gettimeofday( &curTimeVal, NULL );
+	struct timespec		curTimeVal;
+#ifdef _POSIC_CPUTIME
+	clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &curTimeVal );
+#else
+	clock_gettime( CLOCK_MONOTONIC, &curTimeVal );
+#endif
 	t_HiResTime			hiResTicks	= static_cast<t_HiResTime>( curTimeVal.tv_sec );
-	hiResTicks	*= 1000000L;
-	hiResTicks	+= static_cast<t_HiResTime>( curTimeVal.tv_usec );
+	hiResTicks	*= 1000000000L;
+	hiResTicks	+= static_cast<t_HiResTime>( curTimeVal.tv_nsec );
 	return hiResTicks;
 }
 

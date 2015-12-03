@@ -5,6 +5,10 @@
 #include <vector>
 #include "HiResTime.h"
 
+#include <limits.h>
+#ifndef LLONG_MAX
+#define LLONG_MAX	9223372036854775807LL
+#endif	// RTEMS doesn't know about LLONG_MAX 
 
 
 /// Purpose: Support class for ContextTimer
@@ -34,6 +38,7 @@ public:
     ContextTimerMax( const char *	pszContextName	)
 		:	m_ContextName(		pszContextName		),
 			m_MaxDur(			0LL					),
+			m_MinDur(			LLONG_MAX			),
 			m_CumDur(			0LL					),
 			m_RateStartTime(	0LL					),
 			m_StartTime(		-1LL				),
@@ -54,6 +59,7 @@ public:
 	void		Reset( )
 	{
 		m_MaxDur	= 0LL;
+		m_MinDur	= LLONG_MAX;
 		m_CumDur	= 0LL;
 		m_Count		= 0;
 		// Restart the clock for rate calculations
@@ -88,6 +94,12 @@ public:
 	t_HiResTime	GetDurMax( ) const
 	{
 		return m_MaxDur;
+	}
+
+ 	/// Get the current min duration
+	t_HiResTime	GetDurMin( ) const
+	{
+		return m_MinDur;
 	}
 
  	/// Get the number of times NewDur() was called
@@ -157,6 +169,7 @@ private:
 
 	std::string				m_ContextName;
 	t_HiResTime				m_MaxDur;
+	t_HiResTime				m_MinDur;
 	t_HiResTime				m_CumDur;
 	t_HiResTime				m_RateStartTime;
 	t_HiResTime				m_StartTime;

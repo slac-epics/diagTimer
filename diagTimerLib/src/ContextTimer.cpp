@@ -62,18 +62,38 @@ extern "C" int testTimerOverhead( unsigned int nLoops )
 	if( nLoops == 0 )
 		nLoops = 10000;
 
-	cout << "testTimerOverhead: " << nLoops	<< " loops ..." << endl;
+	cout << "test of GetHiResTicks(): " << nLoops	<< " loops ..." << endl;
 	t_HiResTime		beginHiRes(		ContextTimer::GetCurTime( )	);
+	t_HiResTime		currentTick	= 0LL;
+	for ( unsigned int i = 0; i < nLoops; i++ )
+	{
+		currentTick = GetHiResTicks();
+	}
+	t_HiResTime	endHiRes(	ContextTimer::GetCurTime( )	);
+
+	if ( currentTick == 0LL )
+	{
+		cout << "GetHiResTicks() is not working on this platform!" << endl;
+		return -1;
+	}
+
+	t_HiResTime	cumDur		=	endHiRes - beginHiRes;
+	double		cumDurSec	=	HiResTicksToSeconds( cumDur );
+	cout	<<	"Avg for "	 << nLoops
+			<<	" loops = "	 << (cumDurSec / nLoops) * 1.0e9 << " ns" << endl;
+
+	cout << "test of ContextTimer: " << nLoops	<< " loops ..." << endl;
+	t_HiResTime		beginContextTest(		ContextTimer::GetCurTime( )	);
 	for ( unsigned int i = 0; i < nLoops; i++ )
 	{
 		{
 		CONTEXT_TIMER( "ContextTimerTest" );
 		}
 	}
-	t_HiResTime	endHiRes(	ContextTimer::GetCurTime( )	);
+	t_HiResTime	endContextTest(	ContextTimer::GetCurTime( )	);
 
-	t_HiResTime	cumDur		=	endHiRes - beginHiRes;
-	double		cumDurSec	=	HiResTicksToSeconds( cumDur );
+	cumDur		=	endContextTest - beginContextTest;
+	cumDurSec	=	HiResTicksToSeconds( cumDur );
 	cout	<<	"Avg for "	 << nLoops
 			<<	" loops = "	 << (cumDurSec / nLoops) * 1.0e9 << " ns" << endl;
 	return 0;

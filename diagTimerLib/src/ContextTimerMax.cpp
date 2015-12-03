@@ -24,6 +24,11 @@ ContextTimerMax::NewDur( const t_HiResTime	&	aNewDur	)
 		// New Maximum duration
 		m_MaxDur	= aNewDur;
 	}
+	if ( m_MinDur > aNewDur )
+	{
+		// New Minumum duration
+		m_MinDur	= aNewDur;
+	}
 	if ( m_RateStartTime == 0 )
 	{
 		// Start the clock for rate calculations
@@ -127,14 +132,17 @@ int	ContextTimerMax::ShowAllContextTimers( )
 
 		double	cumDurSec	= HiResTicksToSeconds( pContextTimerMax->m_CumDur );
 		double	maxDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MaxDur );
+		double	minDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MinDur );
 		cout	<<	setprecision(3)
-			//	<<	setiosflags(ios::scientific)
+				<<	setiosflags(ios::scientific)
+			//	<<	setiosflags(ios::fixed)
+				<<	"CUM = "		<<	setw(9)	<<	cumDurSec
+				<<	"sec, MAX = "	<<	setw(9)	<<	maxDurSec
+				<<	setprecision(4)
+				<<	"sec, MIN = "	<<	setw(10)<<	minDurSec
+				<<	"sec, AVG = "	<<	setw(10)<<	pContextTimerMax->GetDurAvg()
+				<<	"sec, Cnt = "	<<	setw(7)	<<	pContextTimerMax->m_Count
 				<<	setiosflags(ios::fixed)
-				<<	"CUM = "		<<	setw(7)	<<	cumDurSec
-				<<	"sec, MAX = "	<<	setw(9)	<<	maxDurSec * 1000
-				<<	setprecision(5)
-				<<	"ms, AVG = "	<<	setw(9)	<<	pContextTimerMax->GetDurAvg() * 1000
-				<<	"ms, Cnt = "	<<	setw(7)	<<	pContextTimerMax->m_Count
 				<<	setprecision(2)
 				<<	", Rate = "		<<	setw(7)	<<	pContextTimerMax->GetRate()
 				<<	"Hz, context = "			<<	pContextTimerMax->m_ContextName
@@ -171,13 +179,21 @@ int	ContextTimerMax::ShowContextTimer( const string & contextName )
 
 		double	cumDurSec	= HiResTicksToSeconds( pContextTimerMax->m_CumDur );
 		double	maxDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MaxDur );
+		double	minDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MinDur );
 		cout	<<	setiosflags(ios::left)	<<	setw(60)
 				<<	pContextTimerMax->m_ContextName
 				<<	setiosflags(ios::right)
-				<<	": CUM="	<<	setw(5)	<<	cumDurSec
-				<<	"sec, MAX="	<<	setw(6)	<<	maxDurSec * 1000
-				<<	"ms, AVG="	<<	setw(6)	<<	pContextTimerMax->GetDurAvg() * 1000
-				<<	"ms, Cnt="	<<	setw(7)	<<	pContextTimerMax->m_Count
+				<<	setiosflags(ios::scientific)
+			//	<<	setiosflags(ios::fixed)
+				<<	setprecision(3)
+				<<	": CUM="	<<	setw(9)	<<	cumDurSec
+				<<	"sec, MAX="	<<	setw(9)	<<	maxDurSec
+				<<	setprecision(4)
+				<<	"sec, MIN="	<<	setw(10)	<<	minDurSec
+				<<	"sec, AVG="	<<	setw(10)	<<	pContextTimerMax->GetDurAvg()
+				<<	setiosflags(ios::fixed)
+				<<	setprecision(2)
+				<<	"sec, Cnt="	<<	setw(7)	<<	pContextTimerMax->m_Count
 				<<	", Rate = "	<<	setw(6)	<<	pContextTimerMax->GetRate()
 				<<	"Hz"		<<	endl;
 	}
