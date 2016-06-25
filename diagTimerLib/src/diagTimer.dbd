@@ -1,4 +1,6 @@
+function(  GetHiResTicks )
 registrar( GetHiResTicksRegister )
+function(  HiResTicksToSeconds )
 registrar( HiResTicksToSecondsRegister )
 registrar( DisableAllContextTimersRegister )
 registrar( EnableAllContextTimersRegister )

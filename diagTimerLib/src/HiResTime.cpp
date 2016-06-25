@@ -220,6 +220,7 @@ void GetHiResTicksRegister(void)
 {
 	iocshRegister( &GetHiResTicksFuncDef, reinterpret_cast<iocshCallFunc>(GetHiResTicksCallFunc) );
 }
+epicsRegisterFunction( GetHiResTicks );
 
 
 /* Register HiResTicksToSeconds */
@@ -238,6 +239,7 @@ void HiResTicksToSecondsRegister(void)
 {
 	iocshRegister( &HiResTicksToSecondsFuncDef, reinterpret_cast<iocshCallFunc>(HiResTicksToSecondsCallFunc) );
 }
+epicsRegisterFunction( HiResTicksToSeconds );
 
 extern "C"
 {
