@@ -12,4 +12,4 @@ COPY_SUBDIR=iocBoot/iocdiagTimer
 COPY_FILES=st.cmd
 
 include $(TOP)/configure/RULES.ioc
-include $(TOP)/configure/RULES.copy
+# include $(TOP)/configure/RULES.copy
