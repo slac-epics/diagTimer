@@ -9,8 +9,6 @@ extern "C" {
 
 typedef		long long		t_HiResTime;
 
-t_HiResTime	GetHiResTicks();
-
 double  	HiResTicksToSeconds(	t_HiResTime	);
 double  	HiResTicksPerSecond( );
 
@@ -60,6 +58,9 @@ do										      				\
 
 #endif	/*	end of	defined(mpc7455)	*/
 
+#ifdef	__cplusplus
+extern "C" {
+#endif
 #ifdef	read_tsc
 extern __inline__ t_HiResTime GetHiResTicks()
 {
@@ -67,10 +68,15 @@ extern __inline__ t_HiResTime GetHiResTicks()
 	read_tsc( tscVal );
 	return tscVal;
 }
+#else
+extern t_HiResTime	GetHiResTicks();
 #endif	/*	read_tsc	*/
+#ifdef	__cplusplus
+}
+#endif	/*	__cplusplus	*/
 
 #ifdef	__cplusplus
-//	C++ functions
+//	C++ only functions
 
 epicsTime	HiResToEpicsTime(		t_HiResTime );
 
