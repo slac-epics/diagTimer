@@ -23,7 +23,7 @@ double  	HiResTicksPerSecond( );
  * If read_tsc() is not defined here, a version of GetHiResTicks() is provided
  * as a function that provides a backup using clock_gettime()
  */
-#if	defined(__x86_64__)
+#if	defined(__x86_64__) || defined(_X86_64_)
 
 #define		read_tsc( tscVal	)	     					\
 do										      				\
@@ -62,7 +62,7 @@ do										      				\
 extern "C" {
 #endif
 #ifdef	read_tsc
-extern __inline__ t_HiResTime GetHiResTicks()
+static __inline__ t_HiResTime GetHiResTicks()
 {
 	t_HiResTime		tscVal	= 0;
 	read_tsc( tscVal );
