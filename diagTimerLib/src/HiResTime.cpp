@@ -30,7 +30,7 @@ public:
 	static void Initialize( )
 	{
 		epicsTimeStamp		timeStamp;
-		if ( epicsTimeGetCurrent( &timeStamp ) != epicsTimeERROR )
+		if ( epicsTimeGetCurrent( &timeStamp ) == epicsTimeOK )
 		{
 			ms_initialTickCount		= GetHiResTicks();
 			ms_initialTimeOfDay		= timeStamp;
