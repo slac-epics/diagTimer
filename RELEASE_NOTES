@@ -1,0 +1,17 @@
+#
+# SLAC Release Notes for diagTimer
+#
+R1.9.2: 2018-04-19 Bruce Hill
+	Updated for EPICS 3.16 compatibility.
+
+R1.9.1:	2017-08-23 Bruce Hill
+	Fixed some build issues for R3.15.5
+
+R1.9.0: 2016-11-10 Bruce Hill
+	Updated build files to work w/ new git based workflow
+
+R1.8.0: 2016-06-25 Bruce Hill
+	Allow calls to GetHiResTicks and HiResTicksToSeconds by looking them up by name in the EPICS funciton registry.
+
+R1.7.0: 2015-12-03 Bruce Hill
+	Added minumum duration to ContextTimer and changed backoff for usupported cpus to clock_gettime
