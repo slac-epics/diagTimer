@@ -165,7 +165,7 @@ bool			CalibrateHiResTicksPerSec::ms_calibrated		= false;
 extern "C" t_HiResTime GetHiResTicks()
 {
 	struct timespec		curTimeVal;
-#ifdef _POSIC_CPUTIME
+#ifdef _POSIX_CPUTIME
 	clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &curTimeVal );
 #else
 	clock_gettime( CLOCK_MONOTONIC, &curTimeVal );
