@@ -1,6 +1,9 @@
 #
 # SLAC Release Notes for diagTimer
 #
+R1.9.3: 2020-12-04	Bruce Hill
+	Fix typo re _POSIX_CPUTIME
+
 R1.9.2: 2018-04-19 Bruce Hill
 	Updated for EPICS 3.16 compatibility.
 
