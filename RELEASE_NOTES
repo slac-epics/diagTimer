@@ -1,7 +1,7 @@
 #
 # SLAC Release Notes for diagTimer
 #
-R1.9.3: 2020-02-03      Laura King
+R1.9.3: 2020-02-18      Laura King
         Testing for jenkins automation. Includes many test tags created to trigger module builds.
 
 R1.9.3: 2020-12-04	Bruce Hill
