@@ -109,7 +109,7 @@ void	ContextTimerMax::ResetAllContextTimers( )
 
 int	ContextTimerMax::ShowAllContextTimers( )
 {
-	bool	fVerbose	= false;
+	bool	fVerbose	= true;
 	for (	vector<ContextTimerMax *>::iterator it = ms_Instances.begin();
 			it != ms_Instances.end();
 			it++	)
@@ -134,16 +134,15 @@ int	ContextTimerMax::ShowAllContextTimers( )
 		double	maxDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MaxDur );
 		double	minDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MinDur );
 		cout	<<	setprecision(3)
-				<<	setiosflags(ios::scientific)
-			//	<<	setiosflags(ios::fixed)
+				<<	std::scientific
 				<<	"CUM = "		<<	setw(9)	<<	cumDurSec
 				<<	"sec, MAX = "	<<	setw(9)	<<	maxDurSec
 				<<	setprecision(4)
 				<<	"sec, MIN = "	<<	setw(10)<<	minDurSec
 				<<	"sec, AVG = "	<<	setw(10)<<	pContextTimerMax->GetDurAvg()
-				<<	"sec, Cnt = "	<<	setw(7)	<<	pContextTimerMax->m_Count
-				<<	setiosflags(ios::fixed)
+				<<	std::fixed
 				<<	setprecision(2)
+				<<	"sec, Cnt = "	<<	setw(7)	<<	pContextTimerMax->m_Count
 				<<	", Rate = "		<<	setw(7)	<<	pContextTimerMax->GetRate()
 				<<	"Hz, context = "			<<	pContextTimerMax->m_ContextName
 				<<	endl;
@@ -154,7 +153,7 @@ int	ContextTimerMax::ShowAllContextTimers( )
 
 int	ContextTimerMax::ShowContextTimer( const string & contextName )
 {
-	bool	fVerbose	= false;
+	bool	fVerbose	= true;
 	for (	vector<ContextTimerMax *>::iterator it = ms_Instances.begin();
 			it != ms_Instances.end();
 			it++	)
@@ -180,21 +179,18 @@ int	ContextTimerMax::ShowContextTimer( const string & contextName )
 		double	cumDurSec	= HiResTicksToSeconds( pContextTimerMax->m_CumDur );
 		double	maxDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MaxDur );
 		double	minDurSec	= HiResTicksToSeconds( pContextTimerMax->m_MinDur );
-		cout	<<	setiosflags(ios::left)	<<	setw(60)
-				<<	pContextTimerMax->m_ContextName
-				<<	setiosflags(ios::right)
-				<<	setiosflags(ios::scientific)
-			//	<<	setiosflags(ios::fixed)
+		cout	<<	pContextTimerMax->m_ContextName
+				<<	std::scientific
 				<<	setprecision(3)
-				<<	": CUM="	<<	setw(9)	<<	cumDurSec
-				<<	"sec, MAX="	<<	setw(9)	<<	maxDurSec
+				<<	": CUM = "		<<	setw(9)	<<	cumDurSec
+				<<	"sec, MAX = "	<<	setw(9)	<<	maxDurSec
 				<<	setprecision(4)
-				<<	"sec, MIN="	<<	setw(10)	<<	minDurSec
-				<<	"sec, AVG="	<<	setw(10)	<<	pContextTimerMax->GetDurAvg()
-				<<	setiosflags(ios::fixed)
+				<<	"sec, MIN = "	<<	setw(10)<<	minDurSec
+				<<	"sec, AVG = "	<<	setw(10)<<	pContextTimerMax->GetDurAvg()
+				<<	std::fixed
 				<<	setprecision(2)
-				<<	"sec, Cnt="	<<	setw(7)	<<	pContextTimerMax->m_Count
-				<<	", Rate = "	<<	setw(6)	<<	pContextTimerMax->GetRate()
+				<<	"sec, Cnt = "	<<	setw(7)	<<	pContextTimerMax->m_Count
+				<<	", Rate = "		<<	setw(6)	<<	pContextTimerMax->GetRate()
 				<<	"Hz"		<<	endl;
 	}
 	return 0;
