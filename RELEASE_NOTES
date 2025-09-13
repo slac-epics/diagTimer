@@ -1,8 +1,8 @@
 #
 # SLAC Release Notes for diagTimer
 #
-R1.9.3: 2020-02-03      Laura King
-        Testing for jenkins automation -  Includes many test tags created to trigger module builds.
+R1.9.4: 2025-09-12
+	Fix cout issue w/ ShowAllContextTimers
 
 R1.9.3: 2020-12-04	Bruce Hill
 	Fix typo re _POSIX_CPUTIME
